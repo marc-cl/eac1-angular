@@ -1,59 +1,60 @@
-# Eac1Angular
+# EAC1 Angular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.0.
+Projecte Angular desenvolupat per a l'EAC1 de Programació Avançada amb Angular.
 
-## Development server
+## Requisits
 
-To start a local development server, run:
+- Node.js 24.x LTS
+- npm
+- Angular CLI 22.x
+- Git
+- Visual Studio Code
 
-```bash
+## Desenvolupament
+
+Per iniciar el servidor de desenvolupament:
+
 ng serve
-```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+L'aplicació estarà disponible a:
 
-## Code scaffolding
+http://localhost:4200
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Els canvis en els fitxers del projecte es reflecteixen automàticament gràcies al hot reload.
 
-```bash
-ng generate component component-name
-```
+## Estructura del projecte
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Les principals carpetes creades dins de src/app són:
 
-```bash
-ng generate --help
-```
+- components/
+- services/
+- models/
+- pages/
 
-## Building
+## Branques Git
 
-To build the project run:
+El projecte utilitza les branques:
 
-```bash
-ng build
-```
+- main
+- ra1-setup
+- ra2-components
+- ra3-serveis
+- ra4-navegacio
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+La branca de treball actual de l'EAC1 és ra1-setup.
 
-## Running unit tests
+## Interfície inicial
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+La pàgina inicial inclou:
 
-```bash
-ng test
-```
+- Nom de l'aplicació mitjançant una propietat pública.
+- Paràgraf descriptiu.
+- Targeta amb el text "Projecte base llest".
+- Bloc aside informatiu.
+- router-outlet per a la navegació.
 
-## Running end-to-end tests
+## Repositori
 
-For end-to-end (e2e) testing, run:
+El projecte està publicat en GitHub:
 
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+https://github.com/marc-cl/eac1-angular
