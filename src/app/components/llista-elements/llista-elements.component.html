@@ -1,0 +1,12 @@
+<ul class="llista">
+  @for (element of elements; track element.id) {
+    <li class="llista__item" [class.llista__item--seleccionat]="element.id === elementSeleccionat?.id">
+      <app-targeta-element
+        [element]="element"
+        (elementSeleccionat)="onSeleccio($event)"
+      />
+    </li>
+  } @empty {
+    <li class="llista__buit">No hi ha cap element per mostrar.</li>
+  }
+</ul>

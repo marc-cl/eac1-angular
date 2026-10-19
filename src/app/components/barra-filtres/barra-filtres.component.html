@@ -1,0 +1,47 @@
+<form
+  class="filtres"
+  #filtresForm="ngForm"
+  (ngSubmit)="aplicarFiltres(filtresForm)"
+>
+  <div class="filtres__camp">
+    <label for="filtre-text">Cerca per text</label>
+    <input
+      id="filtre-text"
+      name="text"
+      type="text"
+      autocomplete="off"
+      placeholder="Mínim 3 caràcters…"
+      [(ngModel)]="text"
+      #textCtrl="ngModel"
+      minlength="3"
+      [attr.aria-invalid]="textCtrl.invalid && textCtrl.touched ? true : null"
+      [attr.aria-describedby]="
+        textCtrl.invalid && textCtrl.touched
+          ? 'filtre-text-ajuda filtre-text-error'
+          : 'filtre-text-ajuda'
+      "
+    />
+    <p id="filtre-text-ajuda" class="filtres__ajuda">
+      Camp opcional. Si l'ompliu, cal un mínim de 3 caràcters.
+    </p>
+    @if (textCtrl.invalid && textCtrl.touched) {
+      <p id="filtre-text-error" class="filtres__error" role="alert">
+        El text de cerca ha de tenir almenys 3 caràcters.
+      </p>
+    }
+  </div>
+
+  <div class="filtres__camp">
+    <label for="filtre-categoria">Categoria</label>
+    <select id="filtre-categoria" name="categoria" [(ngModel)]="categoria">
+      @for (opcio of categories; track opcio) {
+        <option [value]="opcio">{{ opcio === totes ? 'Totes les categories' : opcio }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="filtres__accions">
+    <button type="submit" [disabled]="filtresForm.invalid">Aplicar</button>
+    <button type="button" (click)="restablirFiltres(filtresForm)">Restablir</button>
+  </div>
+</form>

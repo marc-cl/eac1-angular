@@ -1,0 +1,99 @@
+.filtres {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+
+  &__camp {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 220px;
+
+    label {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    input,
+    select {
+      padding: 0.4rem 0.6rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.3rem;
+      font-size: 0.95rem;
+
+      &[aria-invalid='true'] {
+        border-color: #dc2626;
+      }
+    }
+  }
+
+  &__ajuda {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #6b7280;
+  }
+
+  &__error {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #dc2626;
+  }
+
+  &__accions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    align-self: flex-end;
+    margin-top: 1.4rem;
+
+    button {
+      padding: 0.45rem 1rem;
+      border-radius: 0.3rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    button[type='submit'] {
+      border: 1px solid #3730a3;
+      background-color: #3730a3;
+      color: #fff;
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    button[type='button'] {
+      border: 1px solid #d1d5db;
+      background-color: #fff;
+      color: #374151;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .filtres {
+    flex-direction: column;
+    align-items: stretch;
+
+    &__camp {
+      min-width: 0;
+      width: 100%;
+    }
+
+    &__accions {
+      align-self: stretch;
+      margin-top: 0;
+
+      button {
+        flex: 1;
+      }
+    }
+  }
+}

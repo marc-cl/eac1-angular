@@ -1,0 +1,31 @@
+.etiqueta {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  background-color: #e0e7ff;
+  color: #3730a3;
+
+  &[data-categoria='Àudio'] {
+    background-color: #fde68a;
+    color: #92400e;
+  }
+
+  &[data-categoria='Accessoris'] {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+
+  &[data-categoria='Pantalles'] {
+    background-color: #fecaca;
+    color: #991b1b;
+  }
+
+  &[data-categoria='Energia'] {
+    background-color: #bae6fd;
+    color: #075985;
+  }
+}

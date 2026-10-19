@@ -1,0 +1,23 @@
+<article class="targeta" [class.targeta--destacat]="element.destacat">
+  <header class="targeta__capcalera">
+    <app-etiqueta-element [categoria]="element.categoria" />
+    @if (element.destacat) {
+      <span class="targeta__distintiu">Destacat</span>
+    }
+  </header>
+
+  <h3 class="targeta__titol">{{ element.titol }}</h3>
+  <p class="targeta__descripcio">{{ element.descripcio }}</p>
+
+  <dl class="targeta__detalls">
+    <dt>Valoració</dt>
+    <dd>{{ element.valoracio }} / 5</dd>
+
+    <dt>Actualitzat</dt>
+    <dd>{{ element.dataActualitzacio | date: 'dd/MM/yyyy' }}</dd>
+  </dl>
+
+  <button type="button" class="targeta__boto" (click)="seleccionar()">
+    Veure detall
+  </button>
+</article>
