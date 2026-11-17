@@ -1,72 +1,96 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { App } from './app';
+import { ElementApiResponse } from './models/element.model';
+import { environment } from '../environments/environment';
 
-/** Espera que acabi l'estat de càrrega simulat del component arrel. */
-function esperarFiCarrega(ms = 400): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+const API_URL = `${environment.apiUrl}/elements`;
+
+function elementApi(parcial: Partial<ElementApiResponse> & { id: string }): ElementApiResponse {
+  return {
+    titol: 'Element',
+    descripcio: 'Descripció',
+    categoria: 'electronica',
+    darrera_actualitzacio: '2026-01-01',
+    valoracio_mitjana: '4',
+    popular: false,
+    ...parcial,
+  };
 }
 
+const DEU_ELEMENTS: ElementApiResponse[] = Array.from({ length: 10 }, (_, i) =>
+  elementApi({ id: String(i + 1), titol: `Element ${i + 1}` }),
+);
+
 describe('App', () => {
+  let httpMock: HttpTestingController;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
+
+    httpMock = TestBed.inject(HttpTestingController);
   });
+
+  afterEach(() => httpMock.verify());
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
     expect(fixture.componentInstance).toBeTruthy();
+    httpMock.expectOne(API_URL).flush([]);
   });
 
-  it('mostra l\'estat de càrrega abans que apareguin els elements', async () => {
+  it("mostra l'estat de càrrega abans que arribi la resposta de l'API", () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
+    fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('Carregant elements...');
+
+    httpMock.expectOne(API_URL).flush(DEU_ELEMENTS);
   });
 
-  it('mostra els 10 elements del mock un cop acabada la càrrega', async () => {
+  it('mostra els elements un cop resolta la petició', () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    await esperarFiCarrega();
     fixture.detectChanges();
-    await fixture.whenStable();
+
+    httpMock.expectOne(API_URL).flush(DEU_ELEMENTS);
+    fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Mostrant 10 de 10 elements');
+    expect(compiled.textContent).toContain('Mostrant 10 elements');
     expect(compiled.querySelectorAll('.targeta').length).toBe(10);
   });
 
-  it('filtra per text sense distingir majúscules/minúscules', async () => {
+  it("mostra un banner d'error i permet reintentar", () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    await esperarFiCarrega();
     fixture.detectChanges();
-    await fixture.whenStable();
+
+    httpMock.expectOne(API_URL).flush('no disponible', { status: 0, statusText: 'Unknown Error' });
+    fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    const inputText = compiled.querySelector<HTMLInputElement>('#filtre-text')!;
-    inputText.value = 'PORTÀTIL';
-    inputText.dispatchEvent(new Event('input'));
+    expect(compiled.textContent).toContain("No es pot connectar amb l'API");
+
+    const botoReintentar = compiled.querySelector<HTMLButtonElement>('.estat-error__boto')!;
+    botoReintentar.click();
     fixture.detectChanges();
 
-    compiled.querySelector('form')!.dispatchEvent(new Event('submit'));
+    httpMock.expectOne(API_URL).flush(DEU_ELEMENTS);
     fixture.detectChanges();
-    await fixture.whenStable();
 
-    // "Portàtil" apareix al títol de 2 elements i a la descripció de 2 més
-    // (p. ex. "...compatible amb portàtils i mòbils"), ja que el filtre
-    // cerca tant al títol com a la descripció.
-    expect(compiled.textContent).toContain('Mostrant 4 de 10 elements');
+    expect(compiled.textContent).toContain('Mostrant 10 elements');
   });
 
-  it('filtra per categoria', async () => {
+  it('filtra per categoria demanant-ho a l\'API', () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    await esperarFiCarrega();
     fixture.detectChanges();
-    await fixture.whenStable();
+    httpMock.expectOne(API_URL).flush(DEU_ELEMENTS);
+    fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
     const select = compiled.querySelector<HTMLSelectElement>('#filtre-categoria')!;
@@ -76,102 +100,32 @@ describe('App', () => {
 
     compiled.querySelector('form')!.dispatchEvent(new Event('submit'));
     fixture.detectChanges();
-    await fixture.whenStable();
 
-    expect(compiled.textContent).toContain('Mostrant 2 de 10 elements');
+    const req = httpMock.expectOne(
+      (r) => r.url === API_URL && r.params.get('categoria') === 'audio',
+    );
+    req.flush([elementApi({ id: '3', titol: 'Auriculars', categoria: 'audio' })]);
+    fixture.detectChanges();
+
+    expect(compiled.textContent).toContain('Mostrant 1 elements');
   });
 
-  it('combina text i categoria', async () => {
+  it('selecciona un element i mostra el seu detall, i permet tancar-lo', () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    await esperarFiCarrega();
     fixture.detectChanges();
-    await fixture.whenStable();
-
-    const compiled = fixture.nativeElement as HTMLElement;
-    const inputText = compiled.querySelector<HTMLInputElement>('#filtre-text')!;
-    inputText.value = 'auricular';
-    inputText.dispatchEvent(new Event('input'));
-
-    const select = compiled.querySelector<HTMLSelectElement>('#filtre-categoria')!;
-    select.value = 'Àudio';
-    select.dispatchEvent(new Event('change'));
+    httpMock.expectOne(API_URL).flush(DEU_ELEMENTS);
     fixture.detectChanges();
-
-    compiled.querySelector('form')!.dispatchEvent(new Event('submit'));
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    expect(compiled.textContent).toContain('Mostrant 1 de 10 elements');
-  });
-
-  it('mostra un missatge quan no hi ha cap resultat', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    await esperarFiCarrega();
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    const compiled = fixture.nativeElement as HTMLElement;
-    const inputText = compiled.querySelector<HTMLInputElement>('#filtre-text')!;
-    inputText.value = 'zzz';
-    inputText.dispatchEvent(new Event('input'));
-    fixture.detectChanges();
-
-    compiled.querySelector('form')!.dispatchEvent(new Event('submit'));
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    expect(compiled.textContent).toContain('Mostrant 0 de 10 elements');
-    expect(compiled.textContent).toContain('No hi ha cap element per mostrar.');
-  });
-
-  it('restableix els filtres i torna a mostrar els 10 elements', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    await esperarFiCarrega();
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    const compiled = fixture.nativeElement as HTMLElement;
-    const inputText = compiled.querySelector<HTMLInputElement>('#filtre-text')!;
-    inputText.value = 'zzz';
-    inputText.dispatchEvent(new Event('input'));
-    fixture.detectChanges();
-    compiled.querySelector('form')!.dispatchEvent(new Event('submit'));
-    fixture.detectChanges();
-    await fixture.whenStable();
-    expect(compiled.textContent).toContain('Mostrant 0 de 10 elements');
-
-    const botoRestablir = compiled.querySelector<HTMLButtonElement>(
-      'button[type="button"]',
-    )!;
-    botoRestablir.click();
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    expect(compiled.textContent).toContain('Mostrant 10 de 10 elements');
-  });
-
-  it('selecciona un element i mostra el seu detall, i permet tancar-lo', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    await esperarFiCarrega();
-    fixture.detectChanges();
-    await fixture.whenStable();
 
     const compiled = fixture.nativeElement as HTMLElement;
     const primeraTargeta = compiled.querySelector<HTMLButtonElement>('.targeta__boto')!;
     primeraTargeta.click();
     fixture.detectChanges();
-    await fixture.whenStable();
 
     expect(compiled.querySelector('.detall')).not.toBeNull();
 
     const botoTancar = compiled.querySelector<HTMLButtonElement>('.detall__tancar')!;
     botoTancar.click();
     fixture.detectChanges();
-    await fixture.whenStable();
 
     expect(compiled.querySelector('.detall')).toBeNull();
   });

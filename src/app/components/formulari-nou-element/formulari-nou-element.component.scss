@@ -1,0 +1,82 @@
+.alta {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}
+
+.alta__fila {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  .alta__camp {
+    flex: 1;
+    min-width: 160px;
+  }
+}
+
+.alta__camp {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  label {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.3rem;
+    font-size: 0.95rem;
+
+    &.invalid {
+      border-color: #dc2626;
+    }
+
+    &:focus-visible {
+      outline: 3px solid #1f2937;
+      outline-offset: 2px;
+    }
+  }
+}
+
+.alta__error {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #dc2626;
+}
+
+.alta__exit {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #15803d;
+}
+
+.alta__accions button {
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 0.3rem;
+  background-color: #3730a3;
+  color: #fff;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

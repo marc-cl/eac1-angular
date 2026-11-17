@@ -1,39 +1,31 @@
-<form
-  class="filtres"
-  #filtresForm="ngForm"
-  (ngSubmit)="aplicarFiltres(filtresForm)"
->
+<form class="filtres" [formGroup]="filtresForm" (ngSubmit)="aplicarFiltres()">
   <div class="filtres__camp">
     <label for="filtre-text">Cerca per text</label>
-    <input
-      id="filtre-text"
-      name="text"
-      type="text"
-      autocomplete="off"
-      placeholder="Mínim 3 caràcters…"
-      [(ngModel)]="text"
-      #textCtrl="ngModel"
-      minlength="3"
-      [attr.aria-invalid]="textCtrl.invalid && textCtrl.touched ? true : null"
-      [attr.aria-describedby]="
-        textCtrl.invalid && textCtrl.touched
-          ? 'filtre-text-ajuda filtre-text-error'
-          : 'filtre-text-ajuda'
-      "
-    />
+    <div class="filtres__entrada">
+      <input
+        id="filtre-text"
+        type="text"
+        autocomplete="off"
+        placeholder="Mínim 3 caràcters…"
+        formControlName="text"
+        [attr.aria-invalid]="mostrarErrors ? true : null"
+        [attr.aria-describedby]="mostrarErrors ? 'filtre-text-ajuda filtre-text-error' : 'filtre-text-ajuda'"
+      />
+      @if (text.pending) {
+        <span class="filtres__comprovant" role="status">Comprovant...</span>
+      }
+    </div>
     <p id="filtre-text-ajuda" class="filtres__ajuda">
-      Camp opcional. Si l'ompliu, cal un mínim de 3 caràcters.
+      Camp opcional. Si l'ompliu, cal un mínim de 3 caràcters i que existeixi algun resultat.
     </p>
-    @if (textCtrl.invalid && textCtrl.touched) {
-      <p id="filtre-text-error" class="filtres__error" role="alert">
-        El text de cerca ha de tenir almenys 3 caràcters.
-      </p>
+    @if (mostrarErrors) {
+      <p id="filtre-text-error" class="filtres__error" role="alert">{{ missatgeError }}</p>
     }
   </div>
 
   <div class="filtres__camp">
     <label for="filtre-categoria">Categoria</label>
-    <select id="filtre-categoria" name="categoria" [(ngModel)]="categoria">
+    <select id="filtre-categoria" formControlName="categoria">
       @for (opcio of categories; track opcio) {
         <option [value]="opcio">{{ opcio === totes ? 'Totes les categories' : opcio }}</option>
       }
@@ -41,7 +33,30 @@
   </div>
 
   <div class="filtres__accions">
-    <button type="submit" [disabled]="filtresForm.invalid">Aplicar</button>
-    <button type="button" (click)="restablirFiltres(filtresForm)">Restablir</button>
+    <button type="submit" [disabled]="filtresForm.invalid || filtresForm.pending">Aplicar</button>
+    <button type="button" (click)="restablirFiltres()">Restablir</button>
   </div>
+
+  <section class="filtres__historial" aria-labelledby="titol-historial">
+    <div class="filtres__historial-capcalera">
+      <h2 id="titol-historial">Cerques recents</h2>
+      @if (historial.historial().length > 0) {
+        <button type="button" (click)="historial.netejar()">Neteja</button>
+      }
+    </div>
+
+    @if (historial.historial().length > 0) {
+      <ul>
+        @for (cerca of historial.historial(); track cerca.data) {
+          <li>
+            <button type="button" (click)="recuperar(cerca)">
+              {{ cerca.text }} · {{ cerca.categoria === totes ? 'Totes les categories' : cerca.categoria }}
+            </button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="filtres__ajuda">Encara no hi ha cerques desades.</p>
+    }
+  </section>
 </form>

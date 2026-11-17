@@ -1,0 +1,51 @@
+<form class="alta" [formGroup]="formulari" (ngSubmit)="crear()" aria-label="Afegir un element nou">
+  <h2>Afegir un element</h2>
+
+  <div class="alta__camp">
+    <label for="nou-titol">Títol</label>
+    <input id="nou-titol" type="text" formControlName="titol" [class.invalid]="teError('titol')" />
+    @if (teError('titol')) {
+      <p class="alta__error" role="alert">El títol és obligatori (mínim 3 caràcters).</p>
+    }
+  </div>
+
+  <div class="alta__camp">
+    <label for="nou-descripcio">Descripció</label>
+    <textarea id="nou-descripcio" rows="2" formControlName="descripcio" [class.invalid]="teError('descripcio')"></textarea>
+    @if (teError('descripcio')) {
+      <p class="alta__error" role="alert">La descripció és obligatòria (mínim 10 caràcters).</p>
+    }
+  </div>
+
+  <div class="alta__fila">
+    <div class="alta__camp">
+      <label for="nou-categoria">Categoria</label>
+      <select id="nou-categoria" formControlName="categoria">
+        @for (categoria of categories; track categoria) {
+          <option [value]="categoria">{{ categoria }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="alta__camp">
+      <label for="nou-valoracio">Valoració (0-5)</label>
+      <input id="nou-valoracio" type="number" step="0.1" min="0" max="5" formControlName="valoracio" [class.invalid]="teError('valoracio')" />
+      @if (teError('valoracio')) {
+        <p class="alta__error" role="alert">La valoració ha d'estar entre 0 i 5.</p>
+      }
+    </div>
+  </div>
+
+  <div class="alta__accions">
+    <button type="submit" [disabled]="formulari.invalid || enviant()">
+      {{ enviant() ? 'Enviant...' : 'Crear element' }}
+    </button>
+  </div>
+
+  @if (missatge()) {
+    <p class="alta__exit" role="status">{{ missatge() }}</p>
+  }
+  @if (error()) {
+    <p class="alta__error" role="alert">{{ error() }}</p>
+  }
+</form>

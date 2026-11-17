@@ -1,15 +1,9 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
-import { CategoriaElement } from '../../models/element.model';
-
-export const TOTES_LES_CATEGORIES = 'Totes' as const;
-
-export type CategoriaFiltre = CategoriaElement | typeof TOTES_LES_CATEGORIES;
-
-export interface FiltresElement {
-  text: string;
-  categoria: CategoriaFiltre;
-}
+import { Component, inject, output } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CercaDesada } from '../../models/element.model';
+import { CategoriaFiltre, CriterisCerca, ElementService, TOTES_LES_CATEGORIES } from '../../services/element.service';
+import { HistorialCerquesService } from '../../services/historial-cerques.service';
+import { termeAmbResultatsValidator } from '../../validadors/terme-amb-resultats.validator';
 
 export const CATEGORIES_FILTRE: readonly CategoriaFiltre[] = [
   TOTES_LES_CATEGORIES,
@@ -21,33 +15,72 @@ export const CATEGORIES_FILTRE: readonly CategoriaFiltre[] = [
 ];
 
 @Component({
-  imports: [FormsModule],
+  imports: [ReactiveFormsModule],
   selector: 'app-barra-filtres',
   styleUrl: './barra-filtres.component.scss',
   templateUrl: './barra-filtres.component.html',
 })
 export class BarraFiltresComponent {
-  @Output() filtresAplicats = new EventEmitter<FiltresElement>();
+  private readonly elementService = inject(ElementService);
+  readonly historial = inject(HistorialCerquesService);
+
+  filtresAplicats = output<CriterisCerca>();
 
   readonly categories = CATEGORIES_FILTRE;
   readonly totes = TOTES_LES_CATEGORIES;
 
-  text = '';
-  categoria: CategoriaFiltre = TOTES_LES_CATEGORIES;
+  readonly filtresForm = new FormGroup({
+    text: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.minLength(3)],
+      asyncValidators: [termeAmbResultatsValidator(this.elementService)],
+    }),
+    categoria: new FormControl<CategoriaFiltre>(TOTES_LES_CATEGORIES, { nonNullable: true }),
+  });
 
-  aplicarFiltres(formulari: NgForm): void {
-    if (formulari.invalid) {
+  get text(): FormControl<string> {
+    return this.filtresForm.controls.text;
+  }
+
+  get mostrarErrors(): boolean {
+    return this.text.invalid && (this.text.dirty || this.text.touched);
+  }
+
+  get missatgeError(): string {
+    if (this.text.hasError('minlength')) {
+      return 'El text de cerca ha de tenir almenys 3 caràcters.';
+    }
+    if (this.text.hasError('senseResultats')) {
+      return 'Cap element coincideix amb aquest text.';
+    }
+    return '';
+  }
+
+  aplicarFiltres(): void {
+    if (this.filtresForm.invalid) {
+      this.filtresForm.markAllAsTouched();
       return;
     }
 
-    this.filtresAplicats.emit({ text: this.text.trim(), categoria: this.categoria });
+    const criteris = this.filtresForm.getRawValue();
+    this.historial.desar(criteris.text, criteris.categoria);
+    this.emetre();
   }
 
-  restablirFiltres(formulari: NgForm): void {
-    this.text = '';
-    this.categoria = TOTES_LES_CATEGORIES;
-    formulari.resetForm({ text: '', categoria: TOTES_LES_CATEGORIES });
+  restablirFiltres(): void {
+    this.filtresForm.reset({ text: '', categoria: TOTES_LES_CATEGORIES });
+    this.emetre();
+  }
 
-    this.filtresAplicats.emit({ text: '', categoria: TOTES_LES_CATEGORIES });
+  recuperar(cerca: CercaDesada): void {
+    this.filtresForm.patchValue({
+      text: cerca.text,
+      categoria: cerca.categoria as CategoriaFiltre,
+    });
+    this.aplicarFiltres();
+  }
+
+  private emetre(): void {
+    this.filtresAplicats.emit(this.filtresForm.getRawValue());
   }
 }

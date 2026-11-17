@@ -17,39 +17,58 @@
     <app-barra-filtres (filtresAplicats)="aplicarFiltres($event)" />
   </section>
 
-  @if (carregant()) {
-    <p class="estat-carrega" role="status" aria-live="polite">Carregant elements...</p>
-  } @else {
-    <p class="comptador" role="status" aria-live="polite">
-      Mostrant {{ elementsFiltrats().length }} de {{ totalElements }} elements
-    </p>
+  @switch (elementService.estat().estat) {
+    @case ('inicial') {
+      <p class="estat-carrega" role="status" aria-live="polite">Inicialitzant...</p>
+    }
 
-    <section id="llistat" class="seccio" aria-label="Llistat d'elements">
-      <app-llista-elements
-        [elements]="elementsFiltrats()"
-        [elementSeleccionat]="elementSeleccionat()"
-        (elementSeleccionatChange)="seleccionarElement($event)"
-      />
-    </section>
+    @case ('carregant') {
+      <p class="estat-carrega" role="status" aria-live="polite">Carregant elements...</p>
+    }
 
-    @if (elementSeleccionat(); as detall) {
-      <aside class="detall" aria-live="polite" aria-label="Detall de l'element seleccionat">
-        <header class="detall__capcalera">
-          <h2>{{ detall.titol }}</h2>
-          <button type="button" class="detall__tancar" (click)="tancarDetall()">
-            Tancar detall
-          </button>
-        </header>
-        <p>{{ detall.descripcio }}</p>
-        <dl class="detall__dades">
-          <dt>Categoria</dt>
-          <dd>{{ detall.categoria }}</dd>
-          <dt>Valoració</dt>
-          <dd>{{ detall.valoracio }} / 5</dd>
-          <dt>Actualitzat</dt>
-          <dd>{{ detall.dataActualitzacio | date: 'dd/MM/yyyy' }}</dd>
-        </dl>
-      </aside>
+    @case ('error') {
+      <div class="estat-error" role="alert">
+        <p class="estat-error__missatge">{{ elementService.estat().error }}</p>
+        <button type="button" class="estat-error__boto" (click)="reintentar()">
+          Reintentar
+        </button>
+      </div>
+    }
+
+    @case ('exit') {
+      <p class="comptador" role="status" aria-live="polite">
+        Mostrant {{ elementService.estat().elements.length }} elements
+      </p>
+
+      <section id="llistat" class="seccio" aria-label="Llistat d'elements">
+        <app-llista-elements
+          [elements]="elementService.estat().elements"
+          [elementSeleccionat]="elementSeleccionat()"
+          (elementSeleccionatChange)="seleccionarElement($event)"
+        />
+      </section>
+
+      @if (elementSeleccionat(); as detall) {
+        <aside class="detall" aria-live="polite" aria-label="Detall de l'element seleccionat">
+          <header class="detall__capcalera">
+            <h2>{{ detall.titol }}</h2>
+            <button type="button" class="detall__tancar" (click)="tancarDetall()">
+              Tancar detall
+            </button>
+          </header>
+          <p>{{ detall.descripcio }}</p>
+          <dl class="detall__dades">
+            <dt>Categoria</dt>
+            <dd>{{ detall.categoria }}</dd>
+            <dt>Valoració</dt>
+            <dd>{{ detall.valoracio }} / 5</dd>
+            <dt>Actualitzat</dt>
+            <dd>{{ detall.dataActualitzacio | date: 'dd/MM/yyyy' }}</dd>
+          </dl>
+        </aside>
+      }
+
+      <app-formulari-nou-element />
     }
   }
 </main>

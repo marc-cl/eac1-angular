@@ -44,6 +44,63 @@
     color: #dc2626;
   }
 
+  &__entrada {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__comprovant {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-style: italic;
+  }
+
+  &__historial {
+    flex-basis: 100%;
+    margin-top: 0.5rem;
+
+    h2 {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #374151;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0.5rem 0 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    li button {
+      padding: 0.3rem 0.65rem;
+      border: 1px solid #c7d2fe;
+      border-radius: 999px;
+      background-color: #eef2ff;
+      color: #3730a3;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+  }
+
+  &__historial-capcalera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    button {
+      border: none;
+      background: none;
+      color: #6b7280;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+  }
+
   &__accions {
     display: flex;
     align-items: center;
