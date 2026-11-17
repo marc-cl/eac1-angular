@@ -41,8 +41,6 @@ src/app/
 │   └── historial-cerques.service.ts  Historial de cerques a localStorage
 ├── validadors/
 │   └── terme-amb-resultats.validator.ts  Validador asíncron amb debounce
-├── mocks/
-│   └── dades-mock.ts               Dades mock originals (ja no s'utilitzen en temps d'execució)
 └── components/
     ├── etiqueta-element/        EtiquetaElementComponent    Distintiu visual de categoria
     ├── targeta-element/         TargetaElementComponent     Targeta/resum d'un element

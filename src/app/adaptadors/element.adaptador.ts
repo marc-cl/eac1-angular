@@ -22,7 +22,9 @@ function numeroSegur(valor: unknown, perDefecte = 0): number {
 /** Transforma un element tal com arriba de l'API al model intern de l'aplicació. */
 export function adaptarElement(apiElement: ElementApiResponse): Element {
   return {
-    id: numeroSegur(apiElement.id),
+    // L'API (json-server) assigna ids com a string, no sempre numèrics
+    // (p. ex. a les creacions amb POST), així que es manté com a string.
+    id: String(apiElement.id),
     titol: (apiElement.titol ?? '').trim(),
     descripcio: (apiElement.descripcio ?? '').trim(),
     categoria: normalitzaCategoria(apiElement.categoria),

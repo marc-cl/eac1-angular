@@ -58,7 +58,7 @@ describe('ElementService', () => {
     expect(service.estat().estat).toBe('exit');
     expect(service.estat().elements).toHaveLength(2);
     expect(service.estat().elements[0].categoria).toBe('Electrònica');
-    expect(service.estat().elements[0].id).toBe(1);
+    expect(service.estat().elements[0].id).toBe('1');
   });
 
   it('gestiona un error de connexió amb l\'API', () => {

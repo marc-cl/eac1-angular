@@ -89,6 +89,16 @@
       "darrera_actualitzacio": "2026-04-27",
       "valoracio_mitjana": "2.9",
       "popular": false
+    },
+    {
+      "titol": "Resistència 220 Ω",
+      "descripcio": "Resistència de prova per al formulari d'alta",
+      "categoria": "Energia",
+      "darrera_actualitzacio": "2026-11-17",
+      "valoracio_mitjana": "4",
+      "popular": false,
+      "id": "NoVC7sy2ZvM"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

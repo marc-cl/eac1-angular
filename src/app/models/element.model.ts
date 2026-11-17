@@ -6,7 +6,7 @@ export type CategoriaElement =
   | 'Energia';
 
 export interface Element {
-  id: number;
+  id: string;
   titol: string;
   descripcio: string;
   categoria: CategoriaElement;

@@ -7,7 +7,7 @@ describe('TargetaElementComponent', () => {
   let fixture: ComponentFixture<TargetaElementComponent>;
 
   const elementDeProva: Element = {
-    id: 1,
+    id: '1',
     titol: 'Element de prova',
     descripcio: 'Descripció de prova',
     categoria: 'Electrònica',

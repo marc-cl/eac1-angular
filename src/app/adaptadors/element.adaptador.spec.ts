@@ -12,10 +12,15 @@ describe('adaptarElement', () => {
     popular: true,
   };
 
-  it('converteix id i valoracio de text a número', () => {
+  it('manté l\'id com a string i converteix la valoracio a número', () => {
     const adaptat = adaptarElement(apiElement);
-    expect(adaptat.id).toBe(42);
+    expect(adaptat.id).toBe('42');
     expect(adaptat.valoracio).toBe(4.5);
+  });
+
+  it('manté com a string un id no numèric (p. ex. assignat per POST)', () => {
+    const adaptat = adaptarElement({ ...apiElement, id: 'v_12_6Vcml0' });
+    expect(adaptat.id).toBe('v_12_6Vcml0');
   });
 
   it('retalla espais sobrants de titol i descripcio', () => {
